@@ -59,10 +59,12 @@ let notificationsEnabled = false;
 const startScreenContainer = document.querySelector(".start-screen");
 const nicknameInputContainer = document.querySelector(".nickname-input");
 const mainMenuContainer = document.querySelector(".main-menu");
+const gameContainer = document.querySelector(".game");
 const settingsContainer = document.querySelector(".settings");
 const ratingsContainer = document.querySelector(".ratings");
 
 const submitNicknameButton = document.querySelector("#submit-nickname");
+const answerButtons = Array.from(document.querySelectorAll(".answers-list__item"));
 
 startScreenContainer.onclick = function() {
     startScreenContainer.style.display = "none";
@@ -130,7 +132,14 @@ function acceptNickname() {
 
 function startGame() {
     console.log("STARTED");
+    gameContainer.style.display = "flex";
     mainMenuContainer.style.display = "none";
+
+    for (const each of answerButtons) {
+        each.addEventListener("click", replaceContent);
+    }
+
+    replaceContent();
 }
 
 function openSettings() {
@@ -196,3 +205,41 @@ for (const each of getBackArrow) {
         ratingsContainer.style.display = "none";
     });
 }
+
+const actorsImg = document.querySelector("#need-to-guess");
+
+const usedActorIndex = [];
+const actorsCount = actors.length; // 10
+
+function replaceContent() {
+    let actorsLeft = actorsCount - usedActorIndex.length;
+
+    if (actorsLeft < 4) {
+        alert("CONGRATS! YOU WON!");
+        location.reload();
+        return;
+    }
+
+    let actorIndex = generateIndex(actorsLeft - 1);
+        while (usedActorIndex.includes(actorIndex)) {
+            actorIndex = generateIndex(actorsLeft);
+        }
+    
+    console.log(`CURRENT ACTOR INDEX: ${actorIndex}`);
+    usedActorIndex.push(actorIndex);
+    actorsImg.src = actors[actorIndex].src;
+
+    let currentAnswerIndex = generateIndex(3);
+    console.log(`RIGHT BUTTON IS ${currentAnswerIndex}`);
+
+    answerButtons[currentAnswerIndex].innerHTML = `${actors[actorIndex].firstName} ${actors[actorIndex].lastName}`
+    let usedFalseAnswIndexes = [currentAnswerIndex];
+
+    answerButtons.map((el, i) => {
+        if (!usedFalseAnswIndexes.includes(i)) {
+            el.innerHTML = "ANSWER";
+        }
+    });
+}
+
+let generateIndex = (limit) => Math.round(Math.random() * limit);

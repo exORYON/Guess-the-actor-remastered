@@ -45,11 +45,9 @@ body {
 }
 
 .get-back {
-  position: absolute;
-  left: 50vh;
   width: 30px;
-  top: 73px;
   height: 30px;
+  margin-right: 30px;
   cursor: pointer;
 }
 
@@ -212,8 +210,12 @@ body {
 }
 
 .container__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 5vh;
   letter-spacing: 3px;
+  font-size: 50px;
 }
 
 .settings {
@@ -300,6 +302,50 @@ body {
 }
 
 .ratings {
+  background: $bgGradient;
+}
+
+.game {
   display: none;
   background: $bgGradient;
+  white-space: nowrap;
+
+  #need-to-guess {
+    margin-bottom: 25px;
+  }
+
+  &-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 440px;
+  }
+
+  & .answers-list {
+    display: flex;
+    flex-direction: column;
+
+    &__item {
+      width: 440px;
+      margin: 10px 0;
+      padding: 8px 0;
+      background-color: #fff;
+      font-family: Permanent Marker;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 24px;
+      line-height: 35px;
+      color: #FF2525;
+      border: 1px solid #810D21;
+      text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      transition: .25s ease all;
+
+      &:hover {
+        cursor: pointer;
+        background-color: rgb(255, 225, 239);
+      }
+    }
+  }
 }
