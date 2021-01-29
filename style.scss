@@ -429,3 +429,18 @@ body {
     font-size: 20px;
   }
 }
+
+@media (min-width: 650px) {
+  .main-menu__bg {
+    position: absolute;
+    z-index: 1;
+    width: 140%;
+    height: 186%;
+    background-image: url(images/Vector.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 75%;
+    transform: rotate(60deg);
+    top: -43vh;
+  }
+}
