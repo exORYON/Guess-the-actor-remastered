@@ -51,6 +51,8 @@ const actors = [{
 ];
 
 let nickname = null;
+let points = 0;
+let streak = 0;
 
 let musicEnabled = true;
 let soundsEnabled = true;
@@ -131,25 +133,21 @@ function acceptNickname() {
 }
 
 function startGame() {
-    console.log("STARTED");
     gameContainer.style.display = "flex";
     mainMenuContainer.style.display = "none";
 
-    for (const each of answerButtons) {
-        each.addEventListener("click", replaceContent);
-    }
+    const answersList = document.querySelector(".answers-list");
+    answersList.addEventListener("click", el => replaceContent(el.target));
 
     replaceContent();
 }
 
 function openSettings() {
-    console.log("SETTINGS");
     settingsContainer.style.display = "flex";
     mainMenuContainer.style.display = "none";
 }
 
 function openRating() {
-    console.log("RATING");
     ratingsContainer.style.display = "flex";
     mainMenuContainer.style.display = "none";
 }
@@ -210,36 +208,88 @@ const actorsImg = document.querySelector("#need-to-guess");
 
 const usedActorIndex = [];
 const actorsCount = actors.length; // 10
+let currentAnswerIndex = null;
+let answsersPrepared = false;
 
-function replaceContent() {
-    let actorsLeft = actorsCount - usedActorIndex.length;
+function replaceContent(target) {
+    if (answsersPrepared) {
+        let isButton = target.classList.contains("answers-list__item");
+        if (!isButton) {
+            return;
+        }
 
-    if (actorsLeft < 4) {
-        alert("CONGRATS! YOU WON!");
-        location.reload();
-        return;
-    }
+        checkAnswer(target);
+    } else {
+        let actorsLeft = actorsCount - usedActorIndex.length;
 
-    let actorIndex = generateIndex(actorsLeft - 1);
-        while (usedActorIndex.includes(actorIndex)) {
-            actorIndex = generateIndex(actorsLeft);
+        if (actorsLeft < 4) {
+            alert(`CONGRATS!
+            🎉🎊🎊🎊🎉 ${nickname}, YOU WON 🎉🎊🎊🎊🎉
+            Points: ${points}
+            Streak: ${streak}`);
+            location.reload();
+            return;
         }
     
-    console.log(`CURRENT ACTOR INDEX: ${actorIndex}`);
-    usedActorIndex.push(actorIndex);
-    actorsImg.src = actors[actorIndex].src;
+        let actorIndex = generateIndex(actorsCount - 1);
+            while (usedActorIndex.includes(actorIndex)) {
+                actorIndex = generateIndex(actorsCount - 1);
+            }
+        
+        usedActorIndex.push(actorIndex);
+        actorsImg.src = actors[actorIndex].src;
+    
+        currentAnswerIndex = generateIndex(3);
+    
+        answerButtons[currentAnswerIndex].innerHTML = `${actors[actorIndex].firstName} ${actors[actorIndex].lastName}`
+        let usedFalseAnswIndexes = [actorIndex];
+    
+        answerButtons.map((el, i) => {
+            if (i === currentAnswerIndex) {
+                return;
+            }
+    
+            let randomIndex = generateIndex(actorsLeft - 1);
+            while (usedFalseAnswIndexes.includes(randomIndex)) {
+                randomIndex = generateIndex(actorsLeft);
+            }
+            usedFalseAnswIndexes.push(randomIndex);
+            
+            el.innerHTML = `${actors[randomIndex].firstName} ${actors[randomIndex].lastName}`;
+        });
 
-    let currentAnswerIndex = generateIndex(3);
-    console.log(`RIGHT BUTTON IS ${currentAnswerIndex}`);
+        answsersPrepared = true;
+    }
+}
 
-    answerButtons[currentAnswerIndex].innerHTML = `${actors[actorIndex].firstName} ${actors[actorIndex].lastName}`
-    let usedFalseAnswIndexes = [currentAnswerIndex];
+function checkAnswer(btn) {
+    if (btn.id == currentAnswerIndex) {
+        btn.classList.add("answers-list__item_correct");
+        points += 5;
+        streak++;
+        nextRound(true, btn);
+    } else {
+        btn.classList.add("answers-list__item_incorrect");
+        points -= 5;
+        streak = 0;
+        nextRound(false, btn);
+    }
+}
 
-    answerButtons.map((el, i) => {
-        if (!usedFalseAnswIndexes.includes(i)) {
-            el.innerHTML = "ANSWER";
-        }
-    });
+function nextRound(answerWas, btn) {
+    if (answerWas) {
+        setTimeout(function() {
+            btn.classList.remove("answers-list__item_correct");
+            answsersPrepared = false;
+            replaceContent();
+        }, 1800);
+    } else {
+        setTimeout(function() {
+            btn.classList.remove("answers-list__item_incorrect");
+            answsersPrepared = false;
+            replaceContent();
+        }, 1800);
+    }
 }
 
 let generateIndex = (limit) => Math.round(Math.random() * limit);
